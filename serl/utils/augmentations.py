@@ -10,6 +10,7 @@ def random_crop(key, img, padding):
     )
     return jax.lax.dynamic_slice(padded_img, crop_from, img.shape)
 
+# color jitter is currently not used
 def random_crop_jitter(key, img, padding):
     rngs = jax.random.split(key, 7)
     img = random_crop(rngs[0], img, padding=4)
