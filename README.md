@@ -29,5 +29,5 @@
 
 ## Examples
 
-[This folder contains example usages of serl as in the paper.](serl examples/)
+[This folder contains example usages of serl as in the paper.](serl_examples/)
 
