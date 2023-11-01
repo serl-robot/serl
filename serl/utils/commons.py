@@ -41,3 +41,16 @@ def _share_encoder(source, target):
     # e.g., Use critic conv layers in actor:
     new_params = target.params.copy(add_or_replace=replacers)
     return target.replace(params=new_params)
+
+def get_data(data, start, end):
+    '''
+    recursive helper function to extract data range from a dataset dict, which is used in the replay buffer
+
+    :param data: the input data, can be a dataset dict or a numpy array from the replay buffer
+    :param start: the start index of the data range
+    :param end: the end index of the data range\
+    :return: eventually returns the numpy array within range
+    '''
+    if type(data) == dict:
+        return {k: get_data(v, start, end) for k,v in data.items()}
+    return data[start:end]
