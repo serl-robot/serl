@@ -1,8 +1,8 @@
-# jaxrl5
-
-[![CircleCI](https://dl.circleci.com/status-badge/img/gh/ikostrikov/jaxrl5/tree/main.svg?style=svg&circle-token=668374ebe0f27c7ee70edbdfbbd1dd928725c01a)](https://dl.circleci.com/status-badge/redirect/gh/ikostrikov/jaxrl5/tree/main) [![codecov](https://codecov.io/gh/ikostrikov/jaxrl5/branch/main/graph/badge.svg?token=Q5QMIDZNZ3)](https://codecov.io/gh/ikostrikov/jaxrl5)
+# SERL: A Software Suite for Sample-Efficient Robotic Reinforcement Learning
 
 ## Installation
+- Conda Environment:
+    - create an environment with `conda create -n serl python=3.10`
 
 - Recommended:
 
@@ -27,14 +27,9 @@
 - Check [here](https://github.com/google/jax#installation) for JAX installation with local CUDA and CUDNN installations,
     - This way can be more complicated.
  
-- For running Franka experiments from vision, please also `git clone` and `pip install -e .` this library https://github.com/Leo428/efficientnet-jax. It enables high UTD learning from pixels by using pre-trained encoders.
+- For running experiments from vision, please also `git clone` and `pip install -e .` this library https://github.com/Leo428/efficientnet-jax. It is forked from https://github.com/rwightman/efficientnet-jax to support learning with pre-trained visual encoders (EfficientNet and MobileNets) in JAX and Flax.
 
 ## Examples
 
-[Here.](examples/)
+[This folder contains example usages of serl as in the paper.](serl_examples/)
 
-## Tests
-
-```bash
-MUJOCO_GL=egl CUDA_VISIBLE_DEVICES= pytest tests
-```
