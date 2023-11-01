@@ -8,7 +8,7 @@ from serl.agents.vice.two_vice_learner import TwoVICELearner
 from serl.agents.vice.two_encoded_vice import TwoEncodedVICELearner
 from serl.agents.bc.two_bc_learner import TwoBCLearner
 from serl.agents.vice.franka_vice_learner import FrankaVICELearner
-from serl.agents.drq.drq_classifier_reward_learner import FrankaDRQClassifierLearner
+from serl.agents.drq.drq_classifier_reward_learner import DrQClassifierRewardLearner
 from serl.agents.bc.franka_bc_learner import FrankaBCLearner
 from serl.agents.ddpg.ddpg_learner import DDPGLearner
 from serl.agents.ddpg.pixel_ddpg_learner import PixelDDPGLearner
