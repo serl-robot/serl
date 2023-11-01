@@ -1,0 +1,22 @@
+mujoco == 2.2.2
+dm_control == 1.0.7
+gym == 0.26.2
+gym[classic_control] == 0.26.2
+dmcgym @ git+https://github.com/Leo428/dmcgym
+optax
+flax == 0.7.0
+ml_collections
+numpy
+scipy
+h5py
+matplotlib
+scikit-learn
+jupyter
+tqdm
+seaborn
+absl-py
+wandb
+tensorflow-probability
+moviepy
+imageio
+ipdb
