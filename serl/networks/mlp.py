@@ -2,7 +2,6 @@ from typing import Callable, Optional, Sequence
 
 import flax.linen as nn
 import jax.numpy as jnp
-from serl.networks.spectral import SpectralNormalization
 
 default_init = nn.initializers.xavier_uniform
 
@@ -21,15 +20,9 @@ class MLP(nn.Module):
 
         for i, size in enumerate(self.hidden_dims):
             if i + 1 == len(self.hidden_dims) and self.scale_final is not None:
-                if self.spectral_norm:
-                    x = SpectralNormalization(nn.Dense(size, kernel_init=default_init(self.scale_final)))(x, training=training)
-                else:
-                    x = nn.Dense(size, kernel_init=default_init(self.scale_final))(x)
+                x = nn.Dense(size, kernel_init=default_init(self.scale_final))(x)
             else:
-                if self.spectral_norm:
-                    x = SpectralNormalization(nn.Dense(size, kernel_init=default_init()))(x, training=training)
-                else:
-                    x = nn.Dense(size, kernel_init=default_init())(x)
+                x = nn.Dense(size, kernel_init=default_init())(x)
 
             if i + 1 < len(self.hidden_dims) or self.activate_final:
                 if self.dropout_rate is not None and self.dropout_rate > 0:

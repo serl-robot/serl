@@ -4,8 +4,10 @@ import jax.numpy as jnp
 from serl.networks import default_init
 
 
-class OneDimOutput(nn.Module):
+class NDimOutput(nn.Module):
+    n_dim: int
     base_cls: nn.Module
+    spectral_norm: bool = False
 
     @nn.compact
     def __call__(
@@ -16,5 +18,5 @@ class OneDimOutput(nn.Module):
         else:
             outputs = observations
 
-        value = nn.Dense(1, kernel_init=default_init())(outputs)
-        return jnp.squeeze(value, -1)
+        value = nn.Dense(self.n_dim, kernel_init=default_init())(outputs)
+        return value
