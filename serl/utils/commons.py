@@ -1,4 +1,6 @@
 from serl.data.dataset import DatasetDict
+import os
+from flax.training import checkpoints
 
 def _unpack(batch: DatasetDict):
     '''
@@ -54,3 +56,16 @@ def get_data(data, start, end):
     if type(data) == dict:
         return {k: get_data(v, start, end) for k,v in data.items()}
     return data[start:end]
+
+def restore_checkpoint_(path, item, step):
+        '''
+        helper function to restore checkpoints from a path, checks if the path exists
+
+        :param path: the path to the checkpoints folder
+        :param item: the TrainState to restore
+        :param step: the step to restore
+        :return: the restored TrainState
+        '''
+
+        assert os.path.exists(path)
+        return checkpoints.restore_checkpoint(path, item, step)

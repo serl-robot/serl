@@ -10,7 +10,7 @@ from serl.agents import SACLearner, FrankaDRQClassifierLearner
 from serl.data import ReplayBuffer, MemoryEfficientReplayBuffer
 from serl.evaluation import evaluate
 from serl.wrappers import wrap_gym
-from serl.utils.commons import get_data
+from serl.utils.commons import get_data, restore_checkpoint_
 from franka.env_franka.franka_env.envs.wrappers import GripperCloseEnv, SpacemouseIntervention, TwoCameraFrankaWrapper, FourDoFWrapper, ResetFreeWrapper
 from serl.wrappers.wandb_video import WANDBVideo
 from serl.wrappers.frame_stack import FrameStack
@@ -123,10 +123,6 @@ def main(_):
         env = WANDBVideo(env, pixel_keys=pixel_keys)
     eval_env = env_no_intervention
 
-    def restore_checkpoint_(path, item, step):
-        assert os.path.exists(path)
-        return checkpoints.restore_checkpoint(path, item, step)
-
     kwargs = dict(FLAGS.config)
     model_cls = kwargs.pop("model_cls")
     agent = globals()[model_cls].create(
@@ -141,13 +137,6 @@ def main(_):
             'batch_size': FLAGS.batch_size * FLAGS.utd_ratio,
     })
     replay_buffer.seed(FLAGS.seed)
-
-    def ema(series, alpha=0.5):
-        smoothed = np.zeros_like(series, dtype=float)
-        smoothed[0] = series[0]
-        for i in range(1, len(series)):
-            smoothed[i] = alpha * series[i] + (1-alpha) * smoothed[i-1]
-        return smoothed
 
     classifier = restore_checkpoint_(
         '/home/undergrad/code/jaxrl-franka/examples/pixels/franka_binary_classifier',

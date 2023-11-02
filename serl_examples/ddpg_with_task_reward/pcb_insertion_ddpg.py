@@ -13,6 +13,7 @@ from serl.wrappers import wrap_gym
 from franka.env_franka.franka_env.envs.wrappers import SpacemouseIntervention, TwoCameraFrankaWrapper, InsertionWrapper
 from serl.wrappers.wandb_video import WANDBVideo
 from serl.wrappers.frame_stack import FrameStack
+from serl.utils.commons import restore_checkpoint_
 import os
 import threading
 from queue import Queue
@@ -62,19 +63,6 @@ config_flags.DEFINE_config_file(
     "File path to the training hyperparameter configuration.",
     lock_config=False,
 )
-
-def get_data(data, start, end):
-    '''
-    recursive helper function to extract data range from a dataset dict, which is used in the replay buffer
-
-    :param data: the input data, can be a dataset dict or a numpy array from the replay buffer
-    :param start: the start index of the data range
-    :param end: the end index of the data range\
-    :return: eventually returns the numpy array within range
-    '''
-    if type(data) == dict:
-        return {k: get_data(v, start, end) for k,v in data.items()}
-    return data[start:end]
 
 def learner_thread(agent: PixelDDPGLearner, replay_buffer_iterator,
                    agent_queue: Queue, log_queue: Queue, train_queue: Queue, pixel_keys=('pixels',)):
@@ -142,19 +130,6 @@ def main(_):
     if FLAGS.save_video:
         env = WANDBVideo(env, pixel_keys=pixel_keys)
     eval_env = env_no_intervention
-
-    def restore_checkpoint_(path, item, step):
-        '''
-        helper function to restore checkpoints from a path, checks if the path exists
-
-        :param path: the path to the checkpoints folder
-        :param item: the TrainState to restore
-        :param step: the step to restore
-        :return: the restored TrainState
-        '''
-
-        assert os.path.exists(path)
-        return checkpoints.restore_checkpoint(path, item, step)
 
     # initialize the agent from user specified config
     kwargs = dict(FLAGS.config)
