@@ -161,7 +161,6 @@ def main(_):
     # restore checkpoints and run eval
     # TODO: should make the path user specified
     if FLAGS.eval_mode:
-        import ipdb; ipdb.set_trace()
         actor = restore_checkpoint_(
             '/home/undergrad/franka_cable_ckpts/franka_cable_classifier_2wrists_fixbugutd4_099_20230910_160303/actor_20000',
             # '/home/undergrad/ur_reset_free_ckpts/ur_cable_classifier_2wrists_fixbugutd4_099_20230910_000829/actor_16000',

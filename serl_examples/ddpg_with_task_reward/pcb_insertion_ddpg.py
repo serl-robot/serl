@@ -166,7 +166,6 @@ def main(_):
     # restore checkpoints and run eval
     # TODO: should make the path user specified
     if FLAGS.eval_mode:
-        import ipdb; ipdb.set_trace()
         actor = restore_checkpoint_(
             '/home/undergrad/norand_pcb_ddpg/norand_ddpg_utd4_099_20230915_001556/actor_22000',
             agent.actor,
