@@ -127,7 +127,6 @@ def main(_):
             step = None,
         )
         agent = agent.replace(actor=actor)
-        import ipdb; ipdb.set_trace()
         for i in range(100):
             eval_info, video = evaluate(
                 agent,
@@ -144,7 +143,6 @@ def main(_):
         for k,v in info.items():
             wandb.log({f'training/{k}': v}, step=i)
 
-    import ipdb; ipdb.set_trace()
     checkpoints.save_checkpoint(f'{FLAGS.ckpt_path}/{FLAGS.exp_prefix}_{unique_identifier}',
                 agent.actor,
                 prefix='actor_',
