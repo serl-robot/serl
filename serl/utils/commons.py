@@ -53,19 +53,36 @@ def get_data(data, start, end):
     :param end: the end index of the data range\
     :return: eventually returns the numpy array within range
     '''
+
     if type(data) == dict:
         return {k: get_data(v, start, end) for k,v in data.items()}
     return data[start:end]
 
 def restore_checkpoint_(path, item, step):
-        '''
-        helper function to restore checkpoints from a path, checks if the path exists
+    '''
+    helper function to restore checkpoints from a path, checks if the path exists
 
-        :param path: the path to the checkpoints folder
-        :param item: the TrainState to restore
-        :param step: the step to restore
-        :return: the restored TrainState
-        '''
+    :param path: the path to the checkpoints folder
+    :param item: the TrainState to restore
+    :param step: the step to restore
+    :return: the restored TrainState
+    '''
 
-        assert os.path.exists(path)
-        return checkpoints.restore_checkpoint(path, item, step)
+    assert os.path.exists(path)
+    return checkpoints.restore_checkpoint(path, item, step)
+
+def _reset_weights(source, target):
+    '''
+    Reset weights of target to source
+    TODO: change this to take params directly instead of TrainState
+    :param source: the source network, TrainState
+    :param target: the target network, TrainState
+    '''
+
+    replacers = {}
+    for k, v in source.params.items():
+        if "encoder" not in k:
+            replacers[k] = v
+
+    new_params = target.params.copy(add_or_replace=replacers)
+    return target.replace(params=new_params)
