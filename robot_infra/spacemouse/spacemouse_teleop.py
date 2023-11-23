@@ -1,11 +1,4 @@
 """Uses a spacemouse as action input into the environment.
-
-To use this, first clone robosuite (git@github.com:anair13/robosuite.git),
-add it to the python path, and ensure you can run the following file (and
-see input values from the spacemouse):
-
-robosuite/devices/spacemouse.py
-
 You will likely have to `pip install hidapi` and Spacemouse drivers.
 """
 from spacemouse import SpaceMouse

@@ -19,4 +19,4 @@ To start using the robot, first power on the robot (small switch on the back of 
 
 From there you should be able to navigate to `robot_infra` and then simply run `python franka_server.py`. This should start the impedence controller and the HTTP server. You can test that things are running by trying to move the end effector around, if the impedence controller is running it should be compliant.
 
-Lastly, any code you write can interact with the robot via the gym interface defined in this repo under `env`. Simply run `pip install -e .` in the `env_franka` directory, and in your code simply initialize the env via `gym.make("Franka-{ENVIRONMENT NAME}-v0)`.
+Lastly, any code you write can interact with the robot via the gym interface defined in this repo under `env`. Simply run `pip install -e .` in the `robot_infra` directory, and in your code simply initialize the env via `gym.make("Franka-{ENVIRONMENT NAME}-v0)`.

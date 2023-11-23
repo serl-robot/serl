@@ -11,7 +11,7 @@ from serl.data import ReplayBuffer, MemoryEfficientReplayBuffer
 from serl.evaluation import evaluate
 from serl.wrappers import wrap_gym
 from serl.utils.commons import get_data, restore_checkpoint_
-from franka.env_franka.franka_env.envs.wrappers import GripperCloseEnv, SpacemouseIntervention, TwoCameraFrankaWrapper, FourDoFWrapper, ResetFreeWrapper
+from robot_infra.env.wrappers import GripperCloseEnv, SpacemouseIntervention, TwoCameraFrankaWrapper, FourDoFWrapper, ResetFreeWrapper
 from serl.wrappers.wandb_video import WANDBVideo
 from serl.wrappers.frame_stack import FrameStack
 import os

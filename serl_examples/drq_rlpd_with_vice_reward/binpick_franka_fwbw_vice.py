@@ -13,7 +13,7 @@ from serl.wrappers import wrap_gym
 from serl.wrappers.wandb_video import WANDBVideo
 from serl.wrappers.frame_stack import FrameStack
 from serl.utils.commons import get_data, restore_checkpoint_, ema
-from franka.env_franka.franka_env.envs.wrappers import GripperCloseEnv, SpacemouseIntervention, TwoCameraFrankaWrapper, ResetFreeWrapper, RemoveGripperStateWrapper
+from robot_infra.env.wrappers import GripperCloseEnv, SpacemouseIntervention, TwoCameraFrankaWrapper, FourDoFWrapper, ResetFreeWrapper
 import os
 import threading
 from queue import Queue

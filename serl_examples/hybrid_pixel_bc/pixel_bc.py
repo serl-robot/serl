@@ -10,7 +10,7 @@ from serl.agents import PixelBCLearner, PixelHybridBCLearner
 from serl.data import ReplayBuffer, MemoryEfficientReplayBuffer
 from serl.evaluation import evaluate
 from serl.wrappers import wrap_gym
-from franka.env_franka.franka_env.envs.wrappers import GripperCloseEnv, SpacemouseIntervention, TwoCameraFrankaWrapper, FourDoFWrapper, ResetFreeWrapper
+from robot_infra.env.wrappers import GripperCloseEnv, SpacemouseIntervention, TwoCameraFrankaWrapper, FourDoFWrapper, ResetFreeWrapper
 from serl.wrappers.wandb_video import WANDBVideo
 from serl.wrappers.frame_stack import FrameStack
 from serl.utils.commons import restore_checkpoint_
