@@ -1,22 +1,19 @@
-mujoco == 2.2.2
-dm_control == 1.0.7
-gym == 0.26.2
-gym[classic_control] == 0.26.2
-dmcgym @ git+https://github.com/Leo428/dmcgym
-optax
-flax == 0.7.0
-ml_collections
+gymnasium
 numpy
-scipy
-h5py
-matplotlib
-scikit-learn
-jupyter
-tqdm
-seaborn
-absl-py
-wandb
+tensorflow
 tensorflow-probability
-moviepy
+distrax
+flax
+ml_collections
+tqdm
+chex
+optax
+absl-py
+scipy
+wandb
+einops
 imageio
+moviepy
+pre-commit == 3.3.3
 ipdb
+seaborn

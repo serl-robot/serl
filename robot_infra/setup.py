@@ -1,8 +1,8 @@
 from setuptools import setup
 setup(name='franka_env',
       version='0.0.1',
-      install_requires=['gym',
-                        'pypylon',
+      packages=['franka_env'],
+      install_requires=['gymnasium',
                         'pyrealsense2',
                         'opencv-python',
                         'pyquaternion',

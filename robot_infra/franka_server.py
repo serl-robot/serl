@@ -144,7 +144,7 @@ class Launcher:
                         atol=1e-2, rtol=1e-2):
             time.sleep(1)
             count += 1
-            if count > 100:
+            if count > 30:
                 print('TIMEOUT')
                 break
 
@@ -321,38 +321,63 @@ def gs():
                     "q": np.array(l.q).tolist(),
                     "dq": np.array(l.dq).tolist(),
                     "jacobian": np.array(l.jacobian).tolist()})
-# PCB
-# @app.route("/pcb_compliance_mode", methods=["POST"])
-# def pcb_compliance_mode():
-#     client.update_configuration({"translational_stiffness": 3000})
-#     client.update_configuration({"translational_damping": 180})
-#     client.update_configuration({"rotational_stiffness": 150})
-#     client.update_configuration({"rotational_damping": 7})
-#     client.update_configuration({"translational_clip_neg_x": 0.002})
-#     client.update_configuration({"translational_clip_neg_y": 0.001})
-#     client.update_configuration({"translational_clip_neg_z": 0.002})
-#     client.update_configuration({"translational_clip_x": 0.0015})
-#     client.update_configuration({"translational_clip_y": 0.0005})
-#     client.update_configuration({"translational_clip_z": 0.0014})
-#     client.update_configuration({"rotational_clip_neg_x": 0.015})
-#     client.update_configuration({"rotational_clip_neg_y": 0.002})
-#     client.update_configuration({"rotational_clip_neg_z": 0.005})
-#     client.update_configuration({"rotational_clip_x": 0.016})
-#     client.update_configuration({"rotational_clip_y": 0.002})
-#     client.update_configuration({"rotational_clip_z": 0.005})
-#     client.update_configuration({"translational_Ki": 0})
-#     client.update_configuration({"rotational_Ki": 0})
-#     return "pcb compliance Mode"    
 
-# Peg
-@app.route("/peg_compliance_mode", methods=["POST"])
-def peg_compliance_mode():
+# PCB
+@app.route("/pcb_compliance_mode", methods=["POST"])
+def pcb_compliance_mode():
+    client.update_configuration({"translational_stiffness": 3000})
+    client.update_configuration({"translational_damping": 180})
+    client.update_configuration({"rotational_stiffness": 150})
+    client.update_configuration({"rotational_damping": 7})
+    client.update_configuration({"translational_clip_neg_x": 0.003})
+    client.update_configuration({"translational_clip_neg_y": 0.002})
+    client.update_configuration({"translational_clip_neg_z": 0.007})
+    client.update_configuration({"translational_clip_x": 0.0025})
+    client.update_configuration({"translational_clip_y": 0.0015})
+    client.update_configuration({"translational_clip_z": 0.002})
+    client.update_configuration({"rotational_clip_neg_x": 0.025})
+    client.update_configuration({"rotational_clip_neg_y": 0.007})
+    client.update_configuration({"rotational_clip_neg_z": 0.01})
+    client.update_configuration({"rotational_clip_x": 0.026})
+    client.update_configuration({"rotational_clip_y": 0.007})
+    client.update_configuration({"rotational_clip_z": 0.01})
+    client.update_configuration({"translational_Ki": 0})
+    client.update_configuration({"rotational_Ki": 0})
+    return "pcb compliance Mode"
+
+# USB
+@app.route("/usb_compliance_mode", methods=["POST"])
+def usb_compliance_mode():
+    client.update_configuration({"translational_stiffness": 3000})
+    client.update_configuration({"translational_damping": 180})
+    client.update_configuration({"rotational_stiffness": 150})
+    client.update_configuration({"rotational_damping": 7})
+    client.update_configuration({"translational_clip_neg_x": 0.005})
+    client.update_configuration({"translational_clip_neg_y": 0.005})
+    client.update_configuration({"translational_clip_neg_z": 0.005})
+    client.update_configuration({"translational_clip_x": 0.005})
+    client.update_configuration({"translational_clip_y": 0.005})
+    client.update_configuration({"translational_clip_z": 0.005})
+    client.update_configuration({"rotational_clip_neg_x": 0.025})
+    client.update_configuration({"rotational_clip_neg_y": 0.007})
+    client.update_configuration({"rotational_clip_neg_z": 0.01})
+    client.update_configuration({"rotational_clip_x": 0.026})
+    client.update_configuration({"rotational_clip_y": 0.007})
+    client.update_configuration({"rotational_clip_z": 0.01})
+    client.update_configuration({"translational_Ki": 0})
+    client.update_configuration({"rotational_Ki": 0})
+    return "usb compliance Mode"
+
+
+# Peg rectangle
+@app.route("/cable_wrap_compliance_mode", methods=["POST"])
+def cable_wrap_compliance_mode():
     client.update_configuration({"translational_stiffness": 2000})
     client.update_configuration({"translational_damping": 89})
     client.update_configuration({"rotational_stiffness": 150})
     client.update_configuration({"rotational_damping": 7})
-    client.update_configuration({"translational_Ki": 30})
-    client.update_configuration({"translational_clip_x": 0.005})
+    client.update_configuration({"translational_Ki": 0})
+    client.update_configuration({"translational_clip_x": 0.008})
     client.update_configuration({"translational_clip_y": 0.005})
     client.update_configuration({"translational_clip_z": 0.005})
     client.update_configuration({"translational_clip_neg_x": 0.005})
@@ -360,10 +385,33 @@ def peg_compliance_mode():
     client.update_configuration({"translational_clip_neg_z": 0.005})
     client.update_configuration({"rotational_clip_x": 0.05})
     client.update_configuration({"rotational_clip_y": 0.05})
-    client.update_configuration({"rotational_clip_z": 0.05})
+    client.update_configuration({"rotational_clip_z": 0.02})
     client.update_configuration({"rotational_clip_neg_x": 0.05})
     client.update_configuration({"rotational_clip_neg_y": 0.05})
-    client.update_configuration({"rotational_clip_neg_z": 0.05})
+    client.update_configuration({"rotational_clip_neg_z": 0.02})
+    client.update_configuration({"rotational_Ki": 0})
+    return "cable wrap compliance Mode"
+
+# Peg star
+@app.route("/peg_compliance_mode", methods=["POST"])
+def peg_compliance_mode():
+    client.update_configuration({"translational_stiffness": 2000})
+    client.update_configuration({"translational_damping": 89})
+    client.update_configuration({"rotational_stiffness": 150})
+    client.update_configuration({"rotational_damping": 7})
+    client.update_configuration({"translational_Ki": 30})
+    client.update_configuration({"translational_clip_x": 0.003})
+    client.update_configuration({"translational_clip_y": 0.003})
+    client.update_configuration({"translational_clip_z": 0.003})
+    client.update_configuration({"translational_clip_neg_x": 0.003})
+    client.update_configuration({"translational_clip_neg_y": 0.003})
+    client.update_configuration({"translational_clip_neg_z": 0.01})
+    client.update_configuration({"rotational_clip_x": 0.02})
+    client.update_configuration({"rotational_clip_y": 0.02})
+    client.update_configuration({"rotational_clip_z": 0.02})
+    client.update_configuration({"rotational_clip_neg_x": 0.02})
+    client.update_configuration({"rotational_clip_neg_y": 0.02})
+    client.update_configuration({"rotational_clip_neg_z": 0.02})
     client.update_configuration({"rotational_Ki": 0})
     return "peg compliance Mode"
 

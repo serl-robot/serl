@@ -1,7 +1,7 @@
 """Uses a spacemouse as action input into the environment.
 You will likely have to `pip install hidapi` and Spacemouse drivers.
 """
-from spacemouse import SpaceMouse
+from franka_env.spacemouse.spacemouse import SpaceMouse
 
 import numpy as np
 import os

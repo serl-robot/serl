@@ -4,7 +4,7 @@ from functools import partial
 from itertools import zip_longest
 from typing import Callable, Dict, Optional, Sequence, Tuple, OrderedDict
 from collections import OrderedDict
-import gym
+import gymnasium as gym
 import jax
 from jax import numpy as jnp
 import numpy as np

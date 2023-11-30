@@ -1,15 +1,15 @@
 """Gym Interface for Franka"""
 import numpy as np
-import gym
+import gymnasium as gym
 from pyquaternion import Quaternion
 import cv2
 import copy
 from scipy.spatial.transform import Rotation
 import time
 import requests
-from gym import core, spaces
-from camera.video_capture import VideoCapture
-from camera.rs_capture import RSCapture
+from gymnasium import core, spaces
+from franka_env.camera.video_capture import VideoCapture
+from franka_env.camera.rs_capture import RSCapture
 import queue
 from PIL import Image
 from queue import Queue
@@ -37,12 +37,8 @@ class ImageDisplayer(threading.Thread):
             img_array = self.queue.get()  # retrieve an image from the queue
             if img_array is None:  # None is our signal to exit
                 break
-            # pair1 = np.concatenate([img_array['wrist_1_full'], img_array['wrist_2_full']], axis=0)
             pair1 = np.concatenate([img_array['wrist_1'], img_array['wrist_2']], axis=0)
-            # pair1 = np.concatenate([img_array['wrist_1'], img_array['wrist_2'], img_array['side_1']], axis=0)
-            # pair2 = np.concatenate([img_array['side_2_full'], img_array['side_1_full']], axis=0)
-            # concatenated = np.concatenate([pair1, pair2], axis=1)
-            cv2.imshow('wrist', pair1/255.)
+            cv2.imshow('wrist', pair1)
             cv2.waitKey(1)
 
             self.wrist1.write(img_array['wrist_1_full'])
@@ -59,9 +55,14 @@ class FrankaRobotiq(gym.Env):
         randomReset=False,
         hz=10,
         start_gripper=0,
+        action_scale=(0.02, 0.05, 1),
+        fake_env = False,
     ):
 
-        self._TARGET_POSE = [0.6636488814118523,0.05388642290645651,0.09439445897864279, 3.1339503, 0.009167, 1.5550434]
+        self.action_scale = action_scale
+        self._TARGET_POSE = [
+            0.5907729022946797,0.05342705145048531,0.09071618754222505, 3.1339503, 0.009167, 1.5550434
+        ]
         self._REWARD_THRESHOLD = [0.01, 0.01, 0.01, 0.2, 0.2,  0.2]
         self.resetpos = np.zeros(7)
 
@@ -89,7 +90,7 @@ class FrankaRobotiq(gym.Env):
 
         # Bouding box
         self.xyz_bounding_box = gym.spaces.Box(
-            np.array((0.62, 0.0, 0.05)), np.array((0.71, 0.08, 0.3)), dtype=np.float64
+            np.array((0.56, 0.0, 0.05)), np.array((0.62, 0.08, 0.2)), dtype=np.float64
         )
         self.rpy_bounding_box = gym.spaces.Box(
             np.array((np.pi-0.1, -0.1, 1.35)),
@@ -98,13 +99,13 @@ class FrankaRobotiq(gym.Env):
         )
         ## Action/Observation Space
         self.action_space = gym.spaces.Box(
-            np.array((-0.02, -0.02, -0.02, -0.05, -0.05, -0.05, 0 - 1e-8)),
-            np.array((0.02, 0.02, 0.02, 0.05, 0.05, 0.05, 1 + 1e-8)),
+            np.ones((7,), dtype=np.float32) * -1,
+            np.ones((7,), dtype=np.float32),
         )
 
         self.observation_space = spaces.Dict(
             {
-                "state_observation": spaces.Dict(
+                "state": spaces.Dict(
                     {
                         # "tcp_pose": spaces.Box(-np.inf, np.inf, shape=(7,)), # xyz + quat
                         "tcp_pose": spaces.Box(-np.inf, np.inf, shape=(6,)), # xyz + euler
@@ -117,12 +118,12 @@ class FrankaRobotiq(gym.Env):
                         # "jacobian": spaces.Box(-np.inf, np.inf, shape=((6, 7))),
                     }
                 ),
-                "image_observation": spaces.Dict(
+                "images": spaces.Dict(
                     {
                     "wrist_1": spaces.Box(0, 255, shape=(128, 128, 3), dtype=np.uint8),
-                    "wrist_1_full": spaces.Box(0, 255, shape=(480, 640, 3), dtype=np.uint8),
+                    # "wrist_1_full": spaces.Box(0, 255, shape=(480, 640, 3), dtype=np.uint8),
                     "wrist_2": spaces.Box(0, 255, shape=(128, 128, 3), dtype=np.uint8),
-                    "wrist_2_full": spaces.Box(0, 255, shape=(480, 640, 3), dtype=np.uint8),
+                    # "wrist_2_full": spaces.Box(0, 255, shape=(480, 640, 3), dtype=np.uint8),
                     # "side_1": spaces.Box(0, 255, shape=(128, 128, 3), dtype=np.uint8),
                     # "side_1_full": spaces.Box(0, 255, shape=(480, 640, 3), dtype=np.uint8),
                     }
@@ -130,6 +131,10 @@ class FrankaRobotiq(gym.Env):
             }
         )
         self.cycle_count = 0
+
+        if fake_env:
+            return
+
         self.cap_wrist_1 = VideoCapture(RSCapture(name='wrist_1', serial_number='130322274175', depth=False))
         self.cap_wrist_2 = VideoCapture(RSCapture(name='wrist_2', serial_number='127122270572', depth=False))
         # self.cap_side_1 = VideoCapture(RSCapture(name='side_1', serial_number='128422272758', depth=False))
@@ -234,11 +239,11 @@ class FrankaRobotiq(gym.Env):
             a = action[:3]
 
         self.nextpos = self.currpos.copy()
-        self.nextpos[:3] = self.nextpos[:3] + a
+        self.nextpos[:3] = self.nextpos[:3] + a * self.action_scale[0]
 
         ### GET ORIENTATION FROM ACTION
         self.nextpos[3:] = (
-            Rotation.from_euler("xyz", action[3:6])
+            Rotation.from_euler("xyz", action[3:6] * self.action_scale[1])
             * Rotation.from_quat(self.currpos[3:])
         ).as_quat()
 
@@ -254,18 +259,17 @@ class FrankaRobotiq(gym.Env):
 
         self.update_currpos()
         ob = self._get_obs()
-        obs_xyz = ob['state_observation']['tcp_pose'][:3]
-        # obs_rpy = self.quat_2_euler(ob['state_observation']['tcp_pose'][3:7])
-        obs_rpy = ob['state_observation']['tcp_pose'][3:]
-        reward = self.binary_reward_tcp(ob['state_observation']['tcp_pose'])
-        done = self.curr_path_length >= 100
+        obs_xyz = ob['state']['tcp_pose'][:3]
+        obs_rpy = ob['state']['tcp_pose'][3:]
+        reward = self.binary_reward_tcp(ob['state']['tcp_pose'])
+        done = self.curr_path_length >= 100 or reward
         # if not self.xyz_bounding_box.contains(obs_xyz) or not self.rpy_bounding_box.contains(obs_rpy):
         #     # print('Truncated: Bouding Box')
         #     # print("xyz: ", self.xyz_bounding_box.contains(obs_xyz), obs_xyz)
         #     # print("rortate: ", self.rpy_bounding_box.contains(obs_rpy), obs_rpy)
         #     return ob, 0, True, True, {}
         # return ob, int(reward), done or reward, done, {}
-        return ob, int(reward), done, done, {}
+        return ob, int(reward), done, False, {}
 
 
     def binary_reward_tcp(self, current_pose,):
@@ -281,10 +285,11 @@ class FrankaRobotiq(gym.Env):
 
     def get_im(self):
         images = {}
+        display_images = {}
         for key, cap in self.cap.items():
             try:
                 rgb = cap.read()
-                # images[key] = cv2.resize(rgb, self.observation_space['image_observation'][key].shape[:2][::-1])
+                # images[key] = cv2.resize(rgb, self.observation_space['images'][key].shape[:2][::-1])
                 # if key == 'wrist_1':
                 #     cropped_rgb = rgb[ 0:300, 150:450, :]
                 # if key == 'wrist_2':
@@ -293,8 +298,10 @@ class FrankaRobotiq(gym.Env):
                     cropped_rgb = rgb[:, 80:560, :]
                 if key == 'wrist_2':
                     cropped_rgb = rgb[:, 80:560, :]
-                images[key] = cv2.resize(cropped_rgb, self.observation_space['image_observation'][key].shape[:2][::-1])
-                images[key + "_full"] = rgb
+                resized = cv2.resize(cropped_rgb, self.observation_space['images'][key].shape[:2][::-1])
+                images[key] = resized[..., ::-1]
+                display_images[key] = resized
+                display_images[key + "_full"] = rgb
                 # images[f"{key}_depth"] = depth
             except queue.Empty:
                 input(f'{key} camera frozen. Check connect, then press enter to relaunch...')
@@ -312,7 +319,7 @@ class FrankaRobotiq(gym.Env):
                 self.cap[key] = VideoCapture(cap)
                 return self.get_im()
 
-        self.img_queue.put(images)
+        self.img_queue.put(display_images)
         return images
 
     def _get_state(self):
@@ -333,8 +340,8 @@ class FrankaRobotiq(gym.Env):
         state_observation = self._get_state()
 
         return copy.deepcopy(dict(
-                image_observation=images,
-                state_observation=state_observation
+                images=images,
+                state=state_observation
             ))
 
     def go_to_rest(self, jpos=False):
@@ -405,7 +412,7 @@ class FrankaRobotiq(gym.Env):
             requests.post(self.url + "peg_compliance_mode")
         return count < 50
 
-    def reset(self, jpos=False, gripper=None, require_input=False):
+    def reset(self, jpos=False, gripper=None, require_input=False, **kwargs):
         self.cycle_count += 1
         if self.cycle_count % 150 == 0:
             self.cycle_count = 0

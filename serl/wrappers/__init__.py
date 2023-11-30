@@ -1,5 +1,5 @@
-import gym
-from gym.wrappers.flatten_observation import FlattenObservation
+import gymnasium as gym
+from gymnasium.wrappers.flatten_observation import FlattenObservation
 
 from serl.wrappers.pixels import wrap_pixels
 from serl.wrappers.single_precision import SinglePrecision

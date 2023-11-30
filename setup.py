@@ -17,7 +17,6 @@ def read_requirements_file(filename):
 description = "SERL: A Software Suite for Sample-Efficient Robotic Reinforcement Learning"
 
 install_requires = read_requirements_file("requirements.txt")
-test_requires = read_requirements_file("requirements_test.txt")
 
 setup(
     name="serl",
@@ -42,9 +41,5 @@ setup(
     keywords="reinforcement, machine, learning, research, robotics, jax, flax",
     packages=find_packages(),
     install_requires=install_requires,
-    test_requires=test_requires,
-    extras_require={
-        "test": test_requires,
-    },
     license="MIT",
 )

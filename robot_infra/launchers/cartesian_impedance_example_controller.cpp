@@ -105,11 +105,6 @@ bool CartesianImpedanceExampleController::init(hardware_interface::RobotHW* robo
   cartesian_stiffness_.setZero();
   cartesian_damping_.setZero();
 
-  // data_file_.open("/home/panda/Desktop/data_file.csv", std::ios::out);
-  // // Add a header to the CSV
-  // if(data_file_.is_open()) {
-  //     data_file_ << "time_nsec, position_z_target, position_z, position_desired_z, error_before_clipping_z, error_after_clipping_z, force_before_clipping_z, force_after_clipping_z\n";
-  // }
 
 
   return true;

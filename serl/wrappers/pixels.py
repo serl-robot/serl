@@ -1,7 +1,7 @@
 from typing import Optional, Tuple
 
-import gym
-from gym.wrappers.pixel_observation import PixelObservationWrapper
+import gymnasium as gym
+from gymnasium.wrappers.pixel_observation import PixelObservationWrapper
 
 from serl.wrappers.frame_stack import FrameStack
 from serl.wrappers.repeat_action import RepeatAction

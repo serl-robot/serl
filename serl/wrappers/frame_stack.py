@@ -1,8 +1,8 @@
 import collections
 
-import gym
+import gymnasium as gym
 import numpy as np
-from gym.spaces import Box
+from gymnasium.spaces import Box
 
 
 class FrameStack(gym.Wrapper):

@@ -6,7 +6,7 @@ import jax
 import jax.numpy as jnp
 import numpy as np
 from flax.core import frozen_dict
-from gym.utils import seeding
+from gymnasium.utils import seeding
 
 from serl.types import DataType
 

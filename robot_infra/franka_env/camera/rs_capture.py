@@ -2,7 +2,7 @@ import numpy as np
 import pyrealsense2 as rs                 # Intel RealSense cross-platform open-source API
 import cv2
 from PIL import Image
-from capture import Capture
+from franka_env.camera.capture import Capture
 
 class RSCapture(Capture):
   def get_device_serial_numbers(self):

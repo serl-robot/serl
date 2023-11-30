@@ -1,6 +1,6 @@
 from typing import Dict
 
-import gym
+import gymnasium as gym
 import numpy as np
 
 from serl.wrappers.wandb_video import WANDBVideo

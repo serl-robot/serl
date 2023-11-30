@@ -1,8 +1,8 @@
 import collections
 from typing import Optional, Union
 
-import gym
-import gym.spaces
+import gymnasium as gym
+import gymnasium.spaces
 import jax
 import numpy as np
 
@@ -83,19 +83,11 @@ class ReplayBuffer(Dataset):
         # queue_size = 2 should be ok for one GPU.
         queue = collections.deque()
         device = jax_utils._pmap_device_order()
-        should_pmap = len(device) > 1
 
         def enqueue(n):
             for _ in range(n):
                 data = self.sample(**sample_args)
                 queue.append(jax.device_put(data))
-                # if should_pmap:
-                #     data = [jax.tree_map(lambda d: d[i * len(d) // len(device): (i+1) * len(d) // len(device)], data) for i in range(len(device))]
-                #     queue.append(jax.device_put_sharded(data, devices=device))
-                # else:
-                #     queue.append(jax.device_put(data))
-                # data = [jax.tree_map(lambda d: d[i * len(d) // len(device): (i+1) * len(d) // len(device)], data) for i in range(len(device))]
-                # queue.append(jax.device_put_sharded(data, devices=device))
 
         enqueue(queue_size)
         while queue:
@@ -114,39 +106,3 @@ class ReplayBuffer(Dataset):
                 raise RuntimeError(f'last_idx {last_idx} >= self._size {self._size}')
             last_idx, batch = self.download(last_idx, self._size)
             yield batch
-
-class GPUReplayBuffer(ReplayBuffer):
-    def __init__(
-        self,
-        observation_space: gym.Space,
-        action_space: gym.Space,
-        capacity: int,
-        next_observation_space: Optional[gym.Space] = None,
-    ):
-        super().__init__(observation_space, action_space, capacity, next_observation_space)
-        # Convert data to JAX arrays
-        self.dataset_dict = jax.tree_map(jnp.asarray, self.dataset_dict)
-        self.lock = threading.Lock()  # Lock for thread-safe updates
-
-    def copy_arrays_recursively(self, src, start_idx, to_idx, key=None):
-        if isinstance(src, np.ndarray):
-            src = jax.device_put(src).block_until_ready()
-            self.dataset_dict[key] = self.dataset_dict[key].at[start_idx: to_idx].set(src)
-        elif isinstance(src, FrozenDict):
-            for k in src.keys():
-                self.copy_arrays_recursively(src[k], start_idx, to_idx, k)
-        else:
-            raise TypeError()
-
-    def upload(self, data_dict: FrozenDict):
-        with self.lock:
-            start_idx = self._insert_index
-            end_idx = start_idx + len(data_dict['observations'])
-            self.copy_arrays_recursively(data_dict, start_idx, end_idx)
-            self._insert_index = (self._insert_index + len(data_dict['observations'])) % self._capacity
-            self._size = min(self._size + len(data_dict['observations']), self._capacity)
-
-    def get_iterator(self, queue_size: int = 2, sample_args: dict = {}):
-        while True:
-            indx_max, data = self.sample_jax(**sample_args)
-            yield indx_max, data

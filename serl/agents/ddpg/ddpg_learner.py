@@ -2,7 +2,7 @@
 from functools import partial
 from typing import Dict, Optional, Sequence, Tuple
 
-import gym
+import gymnasium as gym
 import jax
 import jax.numpy as jnp
 import numpy as np
