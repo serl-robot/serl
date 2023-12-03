@@ -20,7 +20,7 @@ from serl.agents.sac.temperature import Temperature
 from serl.data.dataset import DatasetDict
 from serl.distributions import TanhNormal
 from serl.networks import MLP, Ensemble, PixelMultiplexer, StateActionValue
-from serl.networks.encoders import TwoMobileNetEncoder, MobileNetEncoder, TwoD4PGEncoder
+from serl.networks.encoders import MobileNetEncoder, D4PGEncoder
 from serl.networks.encoded_encoder import EncodedEncoder
 from serl.networks.one_d_output import OneDimOutput
 from serl.utils.commons import _unpack, _share_encoder
@@ -83,7 +83,7 @@ class VICELearner(DrQLearner):
 
         if encoder == "d4pg":
             encoder_cls = partial(
-                TwoD4PGEncoder,
+                D4PGEncoder,
                 features=cnn_features,
                 filters=cnn_filters,
                 strides=cnn_strides,

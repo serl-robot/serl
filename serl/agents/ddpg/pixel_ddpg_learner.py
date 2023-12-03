@@ -18,7 +18,7 @@ from serl.agents.ddpg.ddpg_learner import DDPGLearner
 from serl.data.dataset import DatasetDict
 from serl.distributions import TanhNormal
 from serl.networks import MLP, Ensemble, PixelMultiplexer, StateActionValue
-from serl.networks.encoders import TwoMobileNetEncoder, TwoD4PGEncoder
+from serl.networks.encoders import MobileNetEncoder, D4PGEncoder
 from serl.utils.commons import _unpack, _share_encoder
 
 
@@ -60,7 +60,7 @@ class PixelDDPGLearner(DDPGLearner):
 
         if encoder == "d4pg":
             encoder_cls = partial(
-                TwoD4PGEncoder,
+                D4PGEncoder,
                 features=cnn_features,
                 filters=cnn_filters,
                 strides=cnn_strides,

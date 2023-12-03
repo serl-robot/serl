@@ -15,7 +15,7 @@ from serl.agents.sac.temperature import Temperature
 from serl.data.dataset import DatasetDict
 from serl.distributions import TanhNormal
 from serl.networks import MLP, Ensemble, PixelMultiplexer, StateActionValue
-from serl.networks.encoders import D4PGEncoder, ResNetV2Encoder
+from serl.networks.encoders import D4PGEncoder, ResNetV2Encoder, MobileNetEncoder
 from serl.utils.commons import _unpack, _share_encoder
 
 
@@ -74,6 +74,10 @@ class DrQLearner(SACLearner):
             )
         elif encoder == "resnet":
             encoder_cls = partial(ResNetV2Encoder, stage_sizes=(2, 2, 2, 2))
+        elif encoder == "mobilenet":
+            from jeffnet.linen import create_model, EfficientNet
+            MobileNet, mobilenet_variables = create_model('tf_mobilenetv3_large_100', pretrained=True)
+            encoder_cls = partial(MobileNetEncoder, mobilenet=MobileNet, params=mobilenet_variables)
 
         actor_base_cls = partial(MLP, hidden_dims=hidden_dims, activate_final=True)
         actor_cls = partial(TanhNormal, base_cls=actor_base_cls, action_dim=action_dim)

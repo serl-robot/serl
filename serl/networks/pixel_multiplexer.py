@@ -24,16 +24,23 @@ class PixelMultiplexer(nn.Module):
     ) -> jnp.ndarray:
         observations = FrozenDict(observations)
         image_obs, state_obs = observations.pop("state")
-        reshape_img = lambda x: x.reshape(*x.shape[:-2], -1) / 255.0
-        image_obs = jax.tree_map(reshape_img, image_obs)
+        x = []
 
-        x = self.encoder_cls(name=f"image_encoder")(image_obs, training)
-        if self.stop_gradient:
-            # We do not update conv layers with policy gradients.
-            x = jax.lax.stop_gradient(x)
-        x = nn.Dense(512, kernel_init=default_init())(x)
-        x = nn.LayerNorm()(x)
-        x = nn.tanh(x)
+        for image_key in self.pixel_keys:
+            # divide_by will convert the image to float32 and divide by 255
+            # reshape will merge the stacking dimension with the channel dimension
+            encoded_image = self.encoder_cls(name=f"{image_key}_encoder")(
+                image_obs[image_key], training, divide_by=True, reshape=True
+            )
+            # We do not update conv or spatial embedding layers with policy gradients.
+            if self.stop_gradient:
+                encoded_image = jax.lax.stop_gradient(encoded_image)
+            encoded_image = nn.Dense(256, kernel_init=default_init())(encoded_image)
+            encoded_image = nn.LayerNorm()(encoded_image)
+            encoded_image = nn.tanh(encoded_image)
+            x.append(encoded_image)
+
+        x = jnp.concatenate(x, axis=-1)
 
         if "state" in observations:
             y = nn.Dense(self.latent_dim, kernel_init=default_init())(

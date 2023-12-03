@@ -20,7 +20,7 @@ from serl.agents.sac.temperature import Temperature
 from serl.data.dataset import DatasetDict
 from serl.distributions import TanhNormal
 from serl.networks import MLP, Ensemble, PixelMultiplexer, StateActionValue, BinaryClassifier
-from serl.networks.encoders import TwoMobileNetEncoder, TwoD4PGEncoder
+from serl.networks.encoders import D4PGEncoder, ResNetV2Encoder, MobileNetEncoder
 from serl.utils.commons import _unpack, _share_encoder
 
 
@@ -76,26 +76,19 @@ class DrQClassifierRewardLearner(DrQLearner):
 
         if encoder == "d4pg":
             encoder_cls = partial(
-                TwoD4PGEncoder,
+                D4PGEncoder,
                 features=cnn_features,
                 filters=cnn_filters,
                 strides=cnn_strides,
                 padding=cnn_padding,
             )
         elif encoder == "resnet":
-            # raise NotImplementedError
-            from jax_resnet import pretrained_resnet, slice_variables
-            ResNet, resnet_variables = pretrained_resnet(18)
-            ResNet = ResNet()
-            ResNet = nn.Sequential(ResNet.layers[0:3])
-            resnet_variables = slice_variables(resnet_variables, end=3)
-            encoder_cls = partial(TwoResNetEncoder, resnet=ResNet, params=resnet_variables)
+            # ResNet 18
+            encoder_cls = partial(ResNetV2Encoder, stage_sizes=(2, 2, 2, 2))
         elif encoder == "mobilenet":
             from jeffnet.linen import create_model, EfficientNet
-            # MobileNet, mobilenet_variables = create_model('tf_mobilenetv3_small_100', pretrained=True)
-            # MobileNet, mobilenet_variables = create_model('tf_efficientnet_b0', pretrained=True)
             MobileNet, mobilenet_variables = create_model('tf_mobilenetv3_large_100', pretrained=True)
-            encoder_cls = partial(TwoMobileNetEncoder, mobilenet=MobileNet, params=mobilenet_variables)
+            encoder_cls = partial(MobileNetEncoder, mobilenet=MobileNet, params=mobilenet_variables)
 
         actor_base_cls = partial(MLP, hidden_dims=hidden_dims, activate_final=True)
         actor_cls = partial(TanhNormal, base_cls=actor_base_cls, action_dim=action_dim)

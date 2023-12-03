@@ -25,8 +25,8 @@ from serl.evaluation import evaluate
 from edgeml.trainer import TrainerServer, TrainerClient, TrainerTunnel
 from edgeml.data.data_store import QueuedDataStore
 
-from edgeml.utils.jaxrl_m_common import ReplayBufferDataStore
-from edgeml.utils.jaxrl_m_common import make_trainer_config, make_wandb_logger
+from edgeml.utils.common import ReplayBufferDataStore
+from edgeml.utils.common import make_trainer_config, make_wandb_logger
 
 from franka_env.envs.wrappers import GripperCloseEnv, SpacemouseIntervention
 from franka_env.envs.wrappers import FrankaSERLObsWrapper

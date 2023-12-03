@@ -5,6 +5,7 @@ from flax.core.frozen_dict import FrozenDict
 import numpy as np
 import jax
 
+from serl.networks.spatial import SpatialLearnedEmbeddings
 
 class MobileNetEncoder(nn.Module):
     mobilenet: Callable[..., Callable]
@@ -34,6 +35,7 @@ class MobileNetEncoder(nn.Module):
             x = x.astype(jnp.float32) / 255.0
             x = (x - mean) / std
 
+        input_ndim = x.ndim
         if x.ndim == 3:
             x = x[None, ...]
             x = self.mobilenet.apply(self.params, x, mutable=False, training=False)
@@ -41,6 +43,13 @@ class MobileNetEncoder(nn.Module):
             x = self.mobilenet.apply(self.params, x, mutable=False, training=False)
         else:
             raise NotImplementedError('ndim is not 3 or 4')
+
+        # spatial aggregation by a learned embedding, output (bs, 8*channel_dimension)
+        x = SpatialLearnedEmbeddings(*(x.shape[1:]), num_features=8, name=f"spatial_embeddings")(x)
+        x = nn.Dropout(0.1, deterministic=not training)(x)
+
+        if input_ndim == 3: # this is the case without a batch dimension in the front
+            x = jnp.reshape(x, -1)
 
         if self.stop_gradient:
             x = jax.lax.stop_gradient(x)

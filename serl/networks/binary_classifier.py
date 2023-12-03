@@ -1,6 +1,5 @@
 from flax import linen as nn
 from typing import Dict, Optional, Tuple, Type, Union
-from serl.networks.encoders import TwoMobileNetEncoder
 
 class BinaryClassifier(nn.Module):
     hidden_dim: int

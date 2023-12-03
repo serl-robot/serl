@@ -17,7 +17,7 @@ from serl.utils.augmentations import batched_random_crop
 from serl.data.dataset import DatasetDict
 from serl.distributions import TanhNormal
 from serl.networks import MLP, PixelMultiplexer
-from serl.networks.encoders import TwoMobileNetEncoder, TwoD4PGEncoder
+from serl.networks.encoders import MobileNetEncoder, D4PGEncoder
 from serl.networks.one_d_output import OneDimOutput
 from serl.agents.agent import Agent
 from serl.utils.commons import _unpack
@@ -57,7 +57,7 @@ class PixelBCLearner(Agent):
 
         if encoder == "d4pg":
             encoder_cls = partial(
-                TwoD4PGEncoder,
+                D4PGEncoder,
                 features=cnn_features,
                 filters=cnn_filters,
                 strides=cnn_strides,

@@ -17,7 +17,7 @@ from serl.networks import default_init
 class Normal(nn.Module):
     base_cls: Type[nn.Module]
     action_dim: int
-    log_std_min: Optional[float] = -20
+    log_std_min: Optional[float] = -5
     log_std_max: Optional[float] = 2
     state_dependent_std: bool = True
     squash_tanh: bool = False
